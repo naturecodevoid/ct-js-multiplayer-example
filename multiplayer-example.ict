@@ -1,0 +1,172 @@
+ctjsVersion: 1.4.1
+notes: /* empty */
+libs:
+  fittoscreen:
+    mode: scaleFit
+  keyboard: {}
+  akatemplate:
+    toptop: >-
+      <script>
+        // Put your config here!
+        console.error("WARNING: You are using the default firebase configuration settings! Please use your own settings. Change them in 'Basic Template' catmod settings. Remove this if you have changed the config.");
+        const firebaseConfig = {};
+      </script>
+
+
+      <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-app.js">
+
+      <script
+      src="https://www.gstatic.com/firebasejs/7.19.0/firebase-auth.js"></script>
+
+      <script
+      src="https://www.gstatic.com/firebasejs/7.19.0/firebase-database.js"></script
+
+      ></script>
+
+
+      <script>
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database().ref();
+      </script>
+    botbot: ''
+    csscss: ' '
+  random: {}
+  keyboard.polyfill: {}
+textures: []
+skeletons: []
+types: []
+sounds: []
+styles:
+  - name: PlayerName
+    uid: fdb88450-f588-481c-b1fc-af6ba27d51d8
+    origname: saf6ba27d51d8
+    font:
+      family: sans-serif
+      size: 18
+      weight: 400
+      italic: false
+    lastmod: 1598134504638
+    fill:
+      type: '0'
+      color2: '#FFFFFF'
+rooms:
+  - name: Game
+    oncreate: |2
+          //// Setup database and player    
+          const name = Math.round(ct.random(1000000));
+          this.playerTemplate = {
+              name: "Player " + name.toString(),
+              x: 50,
+              y: 50,
+              time: Date.now()
+          };
+
+          this.databaseName = "Player" + name;
+
+          // Add the player
+          database.child(this.databaseName).set(this.playerTemplate);
+
+          // Sync data
+          this.data = {};
+          database.on("value", snap => {
+              this.data = snap.val();
+          });
+
+          // Object for tracking text
+          this.playerTexts = {};
+
+          // Helper function for getting the player
+          this.getPlayer = () => database.child(this.databaseName);
+    onstep: |2-
+          //// Movement
+
+          // X axis
+          if (ct.actions.MoveX.down) {
+              this.getPlayer().child("x").set(Number.parseInt(this.data[this.databaseName].x) + ct.actions.MoveX.value * 2)
+          }
+
+          // Y axis
+          if (ct.actions.MoveY.down) {
+              this.getPlayer().child("y").set(Number.parseInt(this.data[this.databaseName].y) + ct.actions.MoveY.value * 2)
+          }
+
+          //// Cleanup old players
+          // This should be run on a server, but for the sake of a example, it is run on the client
+          for (const playerDataName in this.data) {
+              const player = this.data[playerDataName]
+              if (Date.now() - player.time >= 90 * 1000) database.child(playerDataName).remove();
+          }
+    ondraw: |2-
+          //// Show player positions
+
+          // Remove all the text
+          this.removeChildren();
+          
+          // Re-add the text
+          for (const playerDataName in this.data) {
+              const player = this.data[playerDataName]
+              this.playerTexts[playerDataName] = new PIXI.Text(player.name, ct.styles.get('PlayerName'));
+              this.playerTexts[playerDataName].x = player.x;
+              this.playerTexts[playerDataName].y = player.y;
+              this.addChild(this.playerTexts[playerDataName]);
+          }
+    onleave: ''
+    width: 800
+    height: 600
+    backgrounds: []
+    copies: []
+    tiles:
+      - depth: -10
+        tiles: []
+        extends: {}
+    uid: 342d0d10-dfe6-4b2e-96d1-f573939e3a42
+    thumbnail: f573939e3a42
+    extends: {}
+    gridX: 64
+    gridY: 64
+    lastmod: 1598131760654
+actions:
+  - name: MoveX
+    methods:
+      - code: keyboard.KeyD
+        multiplier: 1
+      - code: keyboard.KeyA
+        multiplier: -1
+  - name: MoveY
+    methods:
+      - code: keyboard.KeyW
+        multiplier: -1
+      - code: keyboard.KeyS
+        multiplier: 1
+emitterTandems: []
+scripts: []
+starting: 0
+settings:
+  authoring:
+    author: naturecodevoid
+    site: 'https://ctjs.rocks'
+    title: Multiplayer Example
+    version:
+      - 0
+      - 0
+      - 0
+    versionPostfix: ''
+  rendering:
+    usePixiLegacy: true
+    maxFPS: 60
+    pixelatedrender: false
+    highDensity: true
+    desktopMode: maximized
+  export:
+    windows: true
+    linux: true
+    mac: true
+  branding:
+    icon: -1
+    accent: '#446adb'
+    invertPreloaderScheme: true
+  fps: 30
+fonts: []
+styletick: .nan
+palette: []
