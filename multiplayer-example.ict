@@ -1,4 +1,4 @@
-ctjsVersion: 1.4.1
+ctjsVersion: 1.4.2
 notes: /* empty */
 libs:
   fittoscreen:
@@ -158,6 +158,7 @@ settings:
     pixelatedrender: false
     highDensity: true
     desktopMode: maximized
+    hideCursor: false
   export:
     windows: true
     linux: true
